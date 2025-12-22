@@ -21,6 +21,6 @@ public enum Eyebrows: Int, Sendable, CaseIterable, Hashable {
     /// - Parameter byte: Hash byte value.
     /// - Returns: Eyebrow style determined by the byte.
     public static func from(byte: UInt8) -> Eyebrows {
-        from(byte: byte, style: .cartoon)
+        from(byte: byte, style: .pixel)
     }
 }

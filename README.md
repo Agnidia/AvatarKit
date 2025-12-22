@@ -1,6 +1,6 @@
 # AvatarKit
 
-A Swift package for generating unique, deterministic face avatars from input strings. Perfect for user profiles, identicons, and anywhere you need consistent visual identification.
+A Swift package for generating unique, deterministic 32×32 pixel art avatars from input strings. Perfect for user profiles, identicons, and anywhere you need consistent visual identification.
 
 [![Swift 6.0](https://img.shields.io/badge/Swift-6.0-orange.svg)](https://swift.org)
 [![Platforms](https://img.shields.io/badge/Platforms-macOS%20|%20iOS%20|%20tvOS%20|%20watchOS%20|%20visionOS-blue.svg)](https://developer.apple.com)
@@ -10,10 +10,10 @@ A Swift package for generating unique, deterministic face avatars from input str
 
 - **Deterministic**: Same input always produces the same avatar
 - **Unique**: Different inputs produce visually distinct faces
+- **Pixel Art**: True 32×32 bitmap rendering with crisp, chunky pixels
 - **Swift 6 Ready**: Full Sendable compliance and modern concurrency support
 - **Cross-Platform**: Works on all Apple platforms
 - **Zero Dependencies**: Pure Swift implementation
-- **Multiple Styles**: Cartoon, Minimalist, Pixel, and Geometric
 
 ## Installation
 
@@ -23,7 +23,7 @@ Add AvatarKit to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/yourusername/AvatarKit.git", from: "1.0.0")
+    .package(url: "https://github.com/nicklockwood/AvatarKit.git", from: "1.0.0")
 ]
 ```
 
@@ -48,37 +48,32 @@ struct ContentView: View {
 ### Basic Avatar Generation
 
 ```swift
-// Default cartoon style, 64pt size
+// Default 64pt size
 let avatar = AvatarKit.avatar(for: "username")
 
-// Specific style
-let minimalist = AvatarKit.avatar(for: "username", style: .minimalist)
-
-// Custom size
+// Custom size - scales up with crisp pixels
 let large = AvatarKit.avatar(for: "username", size: 128)
-
-// Full customization
-let custom = AvatarKit.avatar(for: "username", style: .geometric, size: 96)
 ```
 
-### Available Styles
+### Pixel Art Rendering
 
-| Style | Description |
-|-------|-------------|
-| `.cartoon` | Colorful, rounded, expressive (default) |
-| `.minimalist` | Simple lines, limited colors, clean |
-| `.pixel` | Retro pixel art (32×32 grid) |
-| `.geometric` | Abstract shapes, flat colors |
+AvatarKit renders avatars as authentic 32×32 pixel art using CGContext bitmap rendering:
+
+- Native 32×32 resolution
+- Anti-aliasing disabled for sharp pixel edges
+- Scales up with `.interpolation(.none)` preserving chunky pixels
+- All face features designed as pixel art
+
+```swift
+// Pixel art avatar - crisp at any size
+AvatarKit.avatar(for: "user@example.com", size: 200)
+```
 
 ### Batch Generation
 
 ```swift
 // Generate multiple avatars at once
-let avatars = AvatarKit.avatars(
-    for: ["user1", "user2", "user3"],
-    style: .cartoon,
-    size: 48
-)
+let avatars = AvatarKit.avatars(for: ["user1", "user2", "user3"], size: 48)
 ```
 
 ### Working with Face Data
@@ -97,10 +92,10 @@ print(faceData.accessories)  // glasses, facial hair, earrings
 
 ### Reusable Generator
 
-For generating many avatars with the same style:
+For generating many avatars:
 
 ```swift
-let generator = AvatarKit.generator(style: .minimalist)
+let generator = AvatarKit.generator()
 
 let avatar1 = generator.avatar(for: "user1")
 let avatar2 = generator.avatar(for: "user2")
@@ -130,7 +125,7 @@ AvatarKit uses SHA256 hashing to convert input strings into deterministic face a
 
 1. **Hash**: Input string → SHA256 → 32 bytes
 2. **Select**: Each byte selects a face component via modulo
-3. **Render**: Components are composed into a SwiftUI Canvas view
+3. **Render**: Components are rendered as pixel art using CGContext bitmap at 32×32 native resolution
 
 This ensures:
 - Same input → Same avatar (always)
@@ -173,7 +168,6 @@ struct ProfileView: View {
     var body: some View {
         VStack {
             AvatarKit.avatar(for: userId, size: 120)
-                .clipShape(Circle())
                 .shadow(radius: 4)
 
             Text(userId)
@@ -192,28 +186,8 @@ struct UserListView: View {
     var body: some View {
         List(users, id: \.self) { user in
             HStack {
-                AvatarKit.avatar(for: user, style: .minimalist, size: 40)
+                AvatarKit.avatar(for: user, size: 40)
                 Text(user)
-            }
-        }
-    }
-}
-```
-
-### Style Showcase
-
-```swift
-struct StyleShowcase: View {
-    let input = "demo@example.com"
-
-    var body: some View {
-        HStack(spacing: 20) {
-            ForEach(AvatarStyle.allCases, id: \.self) { style in
-                VStack {
-                    AvatarKit.avatar(for: input, style: style, size: 64)
-                    Text(style.rawValue.capitalized)
-                        .font(.caption)
-                }
             }
         }
     }
@@ -236,7 +210,6 @@ Then press `Cmd+R` to build and run the macOS app.
 
 The example app demonstrates:
 - Interactive avatar generation with live preview
-- All 4 visual styles side by side
 - Size adjustment slider
 - Sample avatar grid
 - Face data inspector showing all components

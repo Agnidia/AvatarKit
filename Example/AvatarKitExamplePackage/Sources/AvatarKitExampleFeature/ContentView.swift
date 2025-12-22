@@ -3,7 +3,6 @@ import AvatarKit
 
 public struct ContentView: View {
     @State private var inputText = "john@example.com"
-    @State private var selectedStyle: AvatarStyle = .cartoon
     @State private var avatarSize: CGFloat = 120
 
     public init() {}
@@ -16,11 +15,7 @@ public struct ContentView: View {
 
                 Divider()
 
-                styleShowcaseSection
-
-                Divider()
-
-                randomAvatarsSection
+                sampleAvatarsSection
 
                 Divider()
 
@@ -40,7 +35,7 @@ public struct ContentView: View {
                 .font(.largeTitle)
                 .fontWeight(.bold)
 
-            Text("Deterministic Face Avatar Generator")
+            Text("Deterministic 32×32 Pixel Art Avatars")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
@@ -55,7 +50,7 @@ public struct ContentView: View {
 
             HStack(spacing: 40) {
                 VStack {
-                    AvatarKit.avatar(for: inputText, style: selectedStyle, size: avatarSize)
+                    AvatarKit.avatar(for: inputText, size: avatarSize)
                         .shadow(color: .black.opacity(0.2), radius: 8, y: 4)
 
                     Text("Size: \(Int(avatarSize))pt")
@@ -74,19 +69,6 @@ public struct ContentView: View {
                     }
 
                     VStack(alignment: .leading, spacing: 4) {
-                        Text("Style")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                        Picker("Style", selection: $selectedStyle) {
-                            ForEach(AvatarStyle.allCases, id: \.self) { style in
-                                Text(style.rawValue.capitalized).tag(style)
-                            }
-                        }
-                        .pickerStyle(.segmented)
-                        .frame(width: 280)
-                    }
-
-                    VStack(alignment: .leading, spacing: 4) {
                         Text("Size")
                             .font(.caption)
                             .foregroundStyle(.secondary)
@@ -102,49 +84,9 @@ public struct ContentView: View {
         }
     }
 
-    // MARK: - Style Showcase
+    // MARK: - Sample Avatars
 
-    private var styleShowcaseSection: some View {
-        VStack(spacing: 16) {
-            Text("All Styles")
-                .font(.headline)
-
-            HStack(spacing: 24) {
-                ForEach(AvatarStyle.allCases, id: \.self) { style in
-                    VStack(spacing: 8) {
-                        AvatarKit.avatar(for: inputText, style: style, size: 80)
-                            .shadow(color: .black.opacity(0.15), radius: 4, y: 2)
-
-                        Text(style.rawValue.capitalized)
-                            .font(.caption)
-                            .fontWeight(.medium)
-
-                        Text(styleDescription(style))
-                            .font(.caption2)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
-                            .frame(width: 100)
-                    }
-                    .padding()
-                    .background(Color.white)
-                    .cornerRadius(12)
-                }
-            }
-        }
-    }
-
-    private func styleDescription(_ style: AvatarStyle) -> String {
-        switch style {
-        case .cartoon: "Colorful & expressive"
-        case .minimalist: "Simple & clean"
-        case .pixel: "Retro 32x32"
-        case .geometric: "Abstract shapes"
-        }
-    }
-
-    // MARK: - Random Avatars
-
-    private var randomAvatarsSection: some View {
+    private var sampleAvatarsSection: some View {
         VStack(spacing: 16) {
             Text("Sample Avatars")
                 .font(.headline)
@@ -152,7 +94,7 @@ public struct ContentView: View {
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: 6), spacing: 16) {
                 ForEach(sampleInputs, id: \.self) { input in
                     VStack(spacing: 4) {
-                        AvatarKit.avatar(for: input, style: selectedStyle, size: 64)
+                        AvatarKit.avatar(for: input, size: 64)
                             .shadow(color: .black.opacity(0.1), radius: 2, y: 1)
 
                         Text(input)
@@ -182,7 +124,7 @@ public struct ContentView: View {
             Text("Face Data Inspector")
                 .font(.headline)
 
-            let faceData = AvatarKit.faceData(for: inputText, style: selectedStyle)
+            let faceData = AvatarKit.faceData(for: inputText)
 
             LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 3), spacing: 12) {
                 dataCard("Face Shape", "\(faceData.faceShape)")

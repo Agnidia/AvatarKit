@@ -21,6 +21,6 @@ public enum Nose: Int, Sendable, CaseIterable, Hashable {
     /// - Parameter byte: Hash byte value.
     /// - Returns: Nose style determined by the byte.
     public static func from(byte: UInt8) -> Nose {
-        from(byte: byte, style: .cartoon)
+        from(byte: byte, style: .pixel)
     }
 }
