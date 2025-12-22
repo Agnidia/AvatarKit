@@ -13,16 +13,9 @@ import SwiftUI
 /// // Generate an avatar view
 /// let avatar = AvatarKit.avatar(for: "john@example.com")
 ///
-/// // With specific style and size
-/// let cartoon = AvatarKit.avatar(for: "jane", style: .cartoon, size: 128)
+/// // With custom size
+/// let large = AvatarKit.avatar(for: "jane", size: 128)
 /// ```
-///
-/// ## Styles
-///
-/// - `.cartoon`: Colorful, rounded, expressive (default)
-/// - `.minimalist`: Simple lines, limited colors
-/// - `.pixel`: Retro pixel art
-/// - `.geometric`: Abstract shapes, flat colors
 ///
 public enum AvatarKit {
 
@@ -32,13 +25,13 @@ public enum AvatarKit {
     ///
     /// - Parameters:
     ///   - input: The input string to hash and generate from (e.g., username, email).
-    ///   - style: The visual style for the avatar (default: `.cartoon`).
+    ///   - style: The visual style for the avatar (default: `.pixel`).
     ///   - size: The size of the avatar in points (default: 64).
     /// - Returns: An AvatarView ready to display.
     @MainActor
     public static func avatar(
         for input: String,
-        style: AvatarStyle = .cartoon,
+        style: AvatarStyle = .pixel,
         size: CGFloat = 64
     ) -> AvatarView {
         let generator = ProceduralAvatarGenerator(style: style)
@@ -49,13 +42,13 @@ public enum AvatarKit {
     ///
     /// - Parameters:
     ///   - inputs: Array of input strings.
-    ///   - style: The visual style for all avatars (default: `.cartoon`).
+    ///   - style: The visual style for all avatars (default: `.pixel`).
     ///   - size: The size of each avatar in points (default: 64).
     /// - Returns: Array of AvatarViews.
     @MainActor
     public static func avatars(
         for inputs: [String],
-        style: AvatarStyle = .cartoon,
+        style: AvatarStyle = .pixel,
         size: CGFloat = 64
     ) -> [AvatarView] {
         let generator = ProceduralAvatarGenerator(style: style)
@@ -77,7 +70,7 @@ public enum AvatarKit {
     ///
     /// - Parameter style: The visual style for generated avatars.
     /// - Returns: A ProceduralAvatarGenerator configured with the style.
-    public static func generator(style: AvatarStyle = .cartoon) -> ProceduralAvatarGenerator {
+    public static func generator(style: AvatarStyle = .pixel) -> ProceduralAvatarGenerator {
         ProceduralAvatarGenerator(style: style)
     }
 
@@ -94,7 +87,7 @@ public enum AvatarKit {
     /// - Returns: A FaceData struct containing all face attributes.
     public static func faceData(
         for input: String,
-        style: AvatarStyle = .cartoon
+        style: AvatarStyle = .pixel
     ) -> FaceData {
         let generator = ProceduralAvatarGenerator(style: style)
         return generator.generate(for: input)
@@ -108,7 +101,7 @@ public enum AvatarKit {
     /// - Returns: Array of FaceData objects.
     public static func faceData(
         for inputs: [String],
-        style: AvatarStyle = .cartoon
+        style: AvatarStyle = .pixel
     ) -> [FaceData] {
         let generator = ProceduralAvatarGenerator(style: style)
         return generator.generate(for: inputs)

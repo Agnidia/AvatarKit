@@ -16,7 +16,7 @@ public enum Eyes: Int, Sendable, CaseIterable, Hashable {
     /// - Returns: Eye style determined by the byte.
     public static func from(byte: UInt8, style: AvatarStyle) -> Eyes {
         // Wink only available in cartoon style
-        let cases: [Eyes] = style == .cartoon
+        let cases: [Eyes] = style == .pixel
             ? Self.allCases
             : Self.allCases.filter { $0 != .wink }
         let index = Int(byte) % cases.count
@@ -27,6 +27,6 @@ public enum Eyes: Int, Sendable, CaseIterable, Hashable {
     /// - Parameter byte: Hash byte value.
     /// - Returns: Eye style determined by the byte.
     public static func from(byte: UInt8) -> Eyes {
-        from(byte: byte, style: .cartoon)
+        from(byte: byte, style: .pixel)
     }
 }

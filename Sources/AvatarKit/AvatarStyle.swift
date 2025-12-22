@@ -1,55 +1,22 @@
 import SwiftUI
 
 /// Visual style for avatar rendering.
+///
+/// AvatarKit renders all avatars as 32×32 pixel art that scales up
+/// with crisp, chunky pixels at any display size.
 public enum AvatarStyle: String, Sendable, CaseIterable, Hashable {
-    /// Colorful, rounded, expressive avatars.
-    case cartoon
-
-    /// Simple lines, limited colors, clean look.
-    case minimalist
-
-    /// Retro pixel art style (32x32 grid).
+    /// True 32×32 pixel art with crisp, chunky pixels.
     case pixel
-
-    /// Abstract shapes, flat colors, modern aesthetic.
-    case geometric
 
     /// Style-specific rendering configuration.
     public var configuration: StyleConfiguration {
-        switch self {
-        case .cartoon:
-            StyleConfiguration(
-                strokeWidth: 2,
-                cornerRadius: 0.3,
-                shadowEnabled: true,
-                colorSaturation: 1.0,
-                pixelGrid: nil
-            )
-        case .minimalist:
-            StyleConfiguration(
-                strokeWidth: 1,
-                cornerRadius: 0.1,
-                shadowEnabled: false,
-                colorSaturation: 0.4,
-                pixelGrid: nil
-            )
-        case .pixel:
-            StyleConfiguration(
-                strokeWidth: 0,
-                cornerRadius: 0,
-                shadowEnabled: false,
-                colorSaturation: 1.0,
-                pixelGrid: 32
-            )
-        case .geometric:
-            StyleConfiguration(
-                strokeWidth: 0,
-                cornerRadius: 0,
-                shadowEnabled: false,
-                colorSaturation: 0.8,
-                pixelGrid: nil
-            )
-        }
+        StyleConfiguration(
+            strokeWidth: 0,
+            cornerRadius: 0,
+            shadowEnabled: false,
+            colorSaturation: 1.0,
+            pixelGrid: 32
+        )
     }
 }
 
@@ -67,7 +34,7 @@ public struct StyleConfiguration: Sendable {
     /// Color saturation multiplier (0-1).
     public let colorSaturation: CGFloat
 
-    /// Pixel grid size for pixel style (nil = vector).
+    /// Pixel grid size (32×32 for pixel art).
     public let pixelGrid: Int?
 
     public init(

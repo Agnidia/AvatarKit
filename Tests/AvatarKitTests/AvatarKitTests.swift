@@ -33,19 +33,14 @@ struct AvatarKitTests {
 
     @Test("Generator factory creates valid generator")
     func generatorFactory() {
-        let generator = AvatarKit.generator(style: .cartoon)
-        #expect(generator.style == .cartoon)
-
-        let minimalistGenerator = AvatarKit.generator(style: .minimalist)
-        #expect(minimalistGenerator.style == .minimalist)
+        let generator = AvatarKit.generator()
+        #expect(generator.style == .pixel)
     }
 
-    @Test("All styles produce valid face data")
-    func allStylesProduceValidFaceData() {
-        for style in AvatarStyle.allCases {
-            let faceData = AvatarKit.faceData(for: "test", style: style)
-            #expect(FaceShape.allCases.contains(faceData.faceShape))
-        }
+    @Test("Pixel style produces valid face data")
+    func pixelStyleProducesValidFaceData() {
+        let faceData = AvatarKit.faceData(for: "test", style: .pixel)
+        #expect(FaceShape.allCases.contains(faceData.faceShape))
     }
 }
 
@@ -109,7 +104,7 @@ struct ProceduralAvatarGeneratorTests {
 
     @Test("Generator produces valid face data")
     func generatorProducesValidFaceData() {
-        let generator = ProceduralAvatarGenerator(style: .cartoon)
+        let generator = ProceduralAvatarGenerator(style: .pixel)
         let face = generator.generate(for: "test")
 
         #expect(FaceShape.allCases.contains(face.faceShape))
@@ -118,15 +113,13 @@ struct ProceduralAvatarGeneratorTests {
 
     @Test("Generator style is preserved")
     func generatorStylePreserved() {
-        for style in AvatarStyle.allCases {
-            let generator = ProceduralAvatarGenerator(style: style)
-            #expect(generator.style == style)
-        }
+        let generator = ProceduralAvatarGenerator(style: .pixel)
+        #expect(generator.style == .pixel)
     }
 
     @Test("Batch generation works correctly")
     func batchGeneration() {
-        let generator = ProceduralAvatarGenerator(style: .cartoon)
+        let generator = ProceduralAvatarGenerator(style: .pixel)
         let faces = generator.generate(for: ["a", "b", "c", "d", "e"])
 
         #expect(faces.count == 5)
@@ -265,37 +258,26 @@ struct ComponentTests {
 @Suite("Style Configuration Tests")
 struct StyleConfigurationTests {
 
-    @Test("All styles have valid configurations")
-    func allStylesHaveValidConfigurations() {
-        for style in AvatarStyle.allCases {
-            let config = style.configuration
+    @Test("Pixel style has valid configuration")
+    func pixelStyleHasValidConfiguration() {
+        let config = AvatarStyle.pixel.configuration
 
-            #expect(config.strokeWidth >= 0)
-            #expect(config.cornerRadius >= 0 && config.cornerRadius <= 1)
-            #expect(config.colorSaturation >= 0 && config.colorSaturation <= 1)
-
-            if style == .pixel {
-                #expect(config.pixelGrid != nil)
-            }
-        }
-    }
-
-    @Test("Cartoon style has shadows enabled")
-    func cartoonStyleHasShadows() {
-        let config = AvatarStyle.cartoon.configuration
-        #expect(config.shadowEnabled == true)
-    }
-
-    @Test("Minimalist style has shadows disabled")
-    func minimalistStyleNoShadows() {
-        let config = AvatarStyle.minimalist.configuration
-        #expect(config.shadowEnabled == false)
+        #expect(config.strokeWidth >= 0)
+        #expect(config.cornerRadius >= 0 && config.cornerRadius <= 1)
+        #expect(config.colorSaturation >= 0 && config.colorSaturation <= 1)
+        #expect(config.pixelGrid != nil)
     }
 
     @Test("Pixel style has grid defined")
     func pixelStyleHasGrid() {
         let config = AvatarStyle.pixel.configuration
         #expect(config.pixelGrid == 32)
+    }
+
+    @Test("Pixel style has no shadows")
+    func pixelStyleNoShadows() {
+        let config = AvatarStyle.pixel.configuration
+        #expect(config.shadowEnabled == false)
     }
 }
 
@@ -338,5 +320,149 @@ struct AccessoriesTests {
         for earring in Accessories.Earrings.allCases {
             _ = earring.color
         }
+    }
+}
+
+@Suite("Pixel Rendering Tests")
+struct PixelRenderingTests {
+
+    @Test("Pixel renderer produces valid CGImage")
+    func pixelRendererProducesValidImage() {
+        let faceData = AvatarKit.faceData(for: "pixel-test")
+        let renderer = PixelAvatarRenderer(gridSize: 32)
+
+        let cgImage = renderer.render(faceData)
+
+        #expect(cgImage != nil)
+        #expect(cgImage?.width == 32)
+        #expect(cgImage?.height == 32)
+    }
+
+    @Test("Pixel renderer works with all face shapes")
+    func pixelRendererWorksWithAllFaceShapes() {
+        let renderer = PixelAvatarRenderer(gridSize: 32)
+
+        for i in 0..<100 {
+            let faceData = AvatarKit.faceData(for: "face-shape-\(i)")
+            let cgImage = renderer.render(faceData)
+            #expect(cgImage != nil)
+        }
+    }
+
+    @Test("Pixel renderer works with all hair styles")
+    func pixelRendererWorksWithAllHairStyles() {
+        let renderer = PixelAvatarRenderer(gridSize: 32)
+
+        for i in 0..<200 {
+            let faceData = AvatarKit.faceData(for: "hair-style-\(i)")
+            let cgImage = renderer.render(faceData)
+            #expect(cgImage != nil)
+        }
+    }
+
+    @Test("Pixel renderer works with accessories")
+    func pixelRendererWorksWithAccessories() {
+        let renderer = PixelAvatarRenderer(gridSize: 32)
+
+        // Find face data with accessories
+        for i in 0..<500 {
+            let faceData = AvatarKit.faceData(for: "accessory-\(i)")
+            let cgImage = renderer.render(faceData)
+            #expect(cgImage != nil)
+        }
+    }
+
+    @Test("Pixel patterns return valid coordinates")
+    func pixelPatternsReturnValidCoordinates() {
+        let gridSize = 32
+
+        // Test face shapes
+        for shape in FaceShape.allCases {
+            let pixels = PixelPatterns.facePixels(for: shape, gridSize: gridSize)
+            #expect(!pixels.isEmpty)
+
+            for pixel in pixels {
+                #expect(pixel.x >= 0 && pixel.x < gridSize)
+                #expect(pixel.y >= 0 && pixel.y < gridSize)
+            }
+        }
+    }
+
+    @Test("Pixel patterns for hair styles are valid")
+    func pixelPatternsForHairStylesAreValid() {
+        let gridSize = 32
+
+        for style in HairStyle.allCases {
+            let frontPixels = PixelPatterns.hairFrontPixels(for: style, gridSize: gridSize)
+            let backPixels = PixelPatterns.hairBackPixels(for: style, gridSize: gridSize)
+
+            // Bald has no pixels, others should have some
+            if style != .bald {
+                #expect(!frontPixels.isEmpty || !backPixels.isEmpty)
+            }
+
+            for pixel in frontPixels {
+                #expect(pixel.x >= 0 && pixel.x < gridSize)
+                #expect(pixel.y >= 0 && pixel.y < gridSize)
+            }
+
+            for pixel in backPixels {
+                #expect(pixel.x >= 0 && pixel.x < gridSize)
+                #expect(pixel.y >= 0 && pixel.y < gridSize)
+            }
+        }
+    }
+
+    @Test("Pixel patterns for eyebrows are valid")
+    func pixelPatternsForEyebrowsAreValid() {
+        let gridSize = 32
+
+        for style in Eyebrows.allCases {
+            let pixels = PixelPatterns.eyebrowPixels(for: style, gridSize: gridSize)
+            #expect(!pixels.isEmpty)
+
+            for pixel in pixels {
+                #expect(pixel.x >= 0 && pixel.x < gridSize)
+                #expect(pixel.y >= 0 && pixel.y < gridSize)
+            }
+        }
+    }
+
+    @Test("Pixel patterns for nose are valid")
+    func pixelPatternsForNoseAreValid() {
+        let gridSize = 32
+
+        for style in Nose.allCases {
+            let pixels = PixelPatterns.nosePixels(for: style, gridSize: gridSize)
+            #expect(!pixels.isEmpty)
+
+            for pixel in pixels {
+                #expect(pixel.x >= 0 && pixel.x < gridSize)
+                #expect(pixel.y >= 0 && pixel.y < gridSize)
+            }
+        }
+    }
+
+    @Test("Pixel patterns for mouth are valid")
+    func pixelPatternsForMouthAreValid() {
+        let gridSize = 32
+
+        for style in Mouth.allCases {
+            let pixels = PixelPatterns.mouthPixels(for: style, gridSize: gridSize)
+            #expect(!pixels.isEmpty)
+
+            for pixel in pixels {
+                #expect(pixel.x >= 0 && pixel.x < gridSize)
+                #expect(pixel.y >= 0 && pixel.y < gridSize)
+            }
+        }
+    }
+
+    @Test("Pixel style configuration uses 32x32 grid")
+    func pixelStyleConfigurationUses32Grid() {
+        let config = AvatarStyle.pixel.configuration
+        #expect(config.pixelGrid == 32)
+        #expect(config.strokeWidth == 0)
+        #expect(config.shadowEnabled == false)
     }
 }

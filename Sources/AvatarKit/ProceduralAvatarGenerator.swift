@@ -5,7 +5,7 @@
 ///
 /// Example:
 /// ```swift
-/// let generator = ProceduralAvatarGenerator(style: .cartoon)
+/// let generator = ProceduralAvatarGenerator(style: .pixel)
 /// let face = generator.generate(for: "john@example.com")
 /// ```
 public struct ProceduralAvatarGenerator: AvatarGenerating, Sendable {
@@ -13,8 +13,8 @@ public struct ProceduralAvatarGenerator: AvatarGenerating, Sendable {
     public let style: AvatarStyle
 
     /// Create a generator with the specified style.
-    /// - Parameter style: The visual style for generated avatars (default: .cartoon).
-    public init(style: AvatarStyle = .cartoon) {
+    /// - Parameter style: The visual style for generated avatars (default: .pixel).
+    public init(style: AvatarStyle = .pixel) {
         self.style = style
     }
 

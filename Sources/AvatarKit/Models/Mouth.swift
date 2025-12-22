@@ -23,6 +23,6 @@ public enum Mouth: Int, Sendable, CaseIterable, Hashable {
     /// - Parameter byte: Hash byte value.
     /// - Returns: Mouth style determined by the byte.
     public static func from(byte: UInt8) -> Mouth {
-        from(byte: byte, style: .cartoon)
+        from(byte: byte, style: .pixel)
     }
 }
