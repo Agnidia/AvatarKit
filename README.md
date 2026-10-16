@@ -222,4 +222,4 @@ MIT License. See [LICENSE](LICENSE) for details.
 
 Inspired by:
 - [Pagan](https://github.com/daboth/pagan) - Python avatar generator
-- [NicknameKit](https://github.com/IGRSoft/NicknameKit) - Architecture patterns
+- [NicknameKit](https://github.com/Agnidia/NicknameKit) - Architecture patterns
